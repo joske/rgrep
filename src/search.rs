@@ -44,8 +44,7 @@ pub fn parse_file(re: &Regex, path: &Path, matches: &mut Vec<String>) {
         let file = file.unwrap();
         let reader = BufReader::new(file);
         for (index, line) in reader.lines().enumerate() {
-            if line.is_ok() {
-                let line = line.unwrap(); // Ignore errors.
+            if let Ok(line) = line {
                 if re.is_match(line.as_str()) {
                     let m = format!("{}:{} : {}", path.to_str().unwrap(), index, line);
                     matches.push(m);
