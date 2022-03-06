@@ -10,12 +10,11 @@ use crate::config::Config;
 pub fn search(config: &Config) -> Vec<String> {
     let mut matches: Vec<String> = Vec::new();
 
-    let mut expr = Vec::new();
+    let mut expr  = String::new();
     if config.ignore_case {
-        expr.push("(?i)".to_owned());
+        expr.push_str("(?i)");
     }
-    expr.push(config.expression.clone());
-    let expr: String = expr.concat();
+    expr.push_str(config.expression.as_str());
     let re = Regex::new(&expr).unwrap();
     let p = Path::new(config.path.as_str());
     if p.is_dir() {
