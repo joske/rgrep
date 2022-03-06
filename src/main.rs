@@ -9,7 +9,6 @@ mod config;
 
 fn main() {
     let mut cmd = command!()
-        // Add the version arguments
         .arg(arg!(-r --recursive).required(false))
         .arg(arg!(-i --ignorecase).required(false))
         .arg(arg!([EXPR] "regex to search for"))
