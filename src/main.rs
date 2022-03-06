@@ -8,12 +8,12 @@ mod search;
 mod config;
 
 fn main() {
-    let mut cmd = command!()
+    let cmd = command!()
         .arg(arg!(-r --recursive).required(false))
         .arg(arg!(-i --ignorecase).required(false))
         .arg(arg!([EXPR] "regex to search for"))
         .arg(arg!([INPUT] "input file"));
-    let matches = cmd.get_matches_mut();
+    let matches = cmd.get_matches();
 
     let pstr = matches.value_of("EXPR").unwrap();
     let config = Config {
