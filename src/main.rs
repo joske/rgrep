@@ -1,3 +1,5 @@
+use std::process::exit;
+
 use clap::{arg, command};
 
 use config::Config;
@@ -23,7 +25,12 @@ fn main() {
     };
     
     let matches = search::search(&config);
+    let empty = matches.is_empty();
     for m in matches {
         println!("{:?}", m);
     }
+    if empty {
+        exit(1);
+    }
+    exit(0);
 }
