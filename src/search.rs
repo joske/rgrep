@@ -1,11 +1,22 @@
-use std::{fs::File, io::Read, path::Path};
 use regex::Regex;
+use std::{
+    fs::File,
+    io::{BufRead, BufReader},
+    path::Path,
+};
 
 use crate::config::Config;
 
 pub fn search(config: &Config) -> Vec<String> {
-    let mut matches : Vec<String> = Vec::new();
-    let re = Regex::new(config.expression.as_str()).unwrap();
+    let mut matches: Vec<String> = Vec::new();
+
+    let mut expr = Vec::new();
+    if config.ignore_case {
+        expr.push("(?i)".to_owned());
+    }
+    expr.push(config.expression.clone());
+    let expr: String = expr.concat();
+    let re = Regex::new(&expr).unwrap();
     let p = Path::new(config.path.as_str());
     if p.is_dir() {
         parse_dir(config, &re, p, &mut matches);
@@ -13,7 +24,6 @@ pub fn search(config: &Config) -> Vec<String> {
         parse_file(&re, p, &mut matches);
     }
     matches
-
 }
 
 pub fn parse_dir(config: &Config, re: &Regex, path: &Path, matches: &mut Vec<String>) {
@@ -30,15 +40,15 @@ pub fn parse_dir(config: &Config, re: &Regex, path: &Path, matches: &mut Vec<Str
 }
 
 pub fn parse_file(re: &Regex, path: &Path, matches: &mut Vec<String>) {
-    println!("Checking {:?}", path);
     let file = File::open(path);
     if file.is_ok() {
-        let mut file = file.unwrap();
-        let mut contents = String::new();
-        if file.read_to_string(&mut contents).is_ok() {
-            for line in contents.lines() {
-                if re.is_match(line) {
-                    let m = format!("{} : {}", path.to_str().unwrap(), line);
+        let file = file.unwrap();
+        let reader = BufReader::new(file);
+        for (index, line) in reader.lines().enumerate() {
+            if line.is_ok() {
+                let line = line.unwrap(); // Ignore errors.
+                if re.is_match(line.as_str()) {
+                    let m = format!("{}:{} : {}", path.to_str().unwrap(), index, line);
                     matches.push(m);
                 }
             }
