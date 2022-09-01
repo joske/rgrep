@@ -21,6 +21,8 @@ pub fn search(config: &Config) -> Result<Vec<String>, String> {
         parse_dir(config, &re, p, &mut matches)?;
     } else if p.is_file() {
         parse_file(config, &re, p, &mut matches)?;
+    } else {
+        return Err(format!("path not found: {}", config.path));
     }
     Ok(matches)
 }
