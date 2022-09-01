@@ -88,7 +88,8 @@ mod tests {
 
     #[test]
     fn test_fixed_strings() {
-        let config = Config::new(String::from("needle"), String::from("/tmp/foo"));
+        let mut config = Config::new(String::from("needle"), String::from("/tmp/foo"));
+        config.fixed_strings = true;
         let mut matches: Vec<String> = Vec::new();
         let re = Regex::new("needle").unwrap();
         let p = Path::new(config.path.as_str());
@@ -101,13 +102,13 @@ mod tests {
             &re,
         );
         assert_eq!(matches.len(), 1);
-        assert_eq!(matches.get(0).unwrap(), "");
     }
+
     #[test]
     fn test_regex() {
         let config = Config::new(String::from("needle"), String::from("/tmp/foo"));
         let mut matches: Vec<String> = Vec::new();
-        let re = Regex::new("needle").unwrap();
+        let re = Regex::new("n[e]*dle").unwrap();
         let p = Path::new(config.path.as_str());
         match_line(
             &config,
