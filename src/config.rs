@@ -11,6 +11,13 @@ pub struct Config {
 impl Config {
     #[allow(dead_code)] // constructor is only used in unit tests
     pub fn new(expr: String, path: String) -> Self {
-        Config { expression: (expr), path: (path), recursive: (false), ignore_case: (false), fixed_strings: (false), invert: (false) }
+        Config {
+            expression: (expr),
+            path: (path),
+            recursive: (false),
+            ignore_case: (false),
+            fixed_strings: (false),
+            invert: (false),
+        }
     }
 }

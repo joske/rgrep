@@ -15,7 +15,7 @@ pub fn search(config: &Config) -> Result<Vec<String>, String> {
         expr.push_str("(?i)");
     }
     expr.push_str(config.expression.as_str());
-    let re = Regex::new(&expr).unwrap();
+    let re = Regex::new(&expr).map_err(|e| e.to_string())?;
     let p = Path::new(config.path.as_str());
     if p.is_dir() {
         parse_dir(config, &re, p, &mut matches)?;
@@ -78,7 +78,7 @@ fn match_line(
 }
 
 fn add_match(path: &Path, index: usize, line: String, matches: &mut Vec<String>) {
-    let m = format!("{}:{} : {}", path.to_str().unwrap(), index, line);
+    let m = format!("{}:{} : {}", path.display(), index, line);
     matches.push(m);
 }
 
