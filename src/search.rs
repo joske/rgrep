@@ -54,7 +54,7 @@ fn parse_file(
     let reader = BufReader::new(file);
     for (index, line) in reader.lines().enumerate() {
         if let Ok(line) = line {
-            match_line(config, line, path, index, matches, re);
+            match_line(config, &line, path, index, matches, re);
         }
     }
     Ok(())
@@ -62,7 +62,7 @@ fn parse_file(
 
 fn match_line(
     config: &Config,
-    line: String,
+    line: &str,
     path: &Path,
     index: usize,
     matches: &mut Vec<String>,
@@ -72,13 +72,13 @@ fn match_line(
         if config.invert ^ line.contains(config.expression.as_str()) {
             add_match(path, index, line, matches);
         }
-    } else if config.invert ^ re.is_match(line.as_str()) {
+    } else if config.invert ^ re.is_match(line) {
         add_match(path, index, line, matches);
     }
 }
 
-fn add_match(path: &Path, index: usize, line: String, matches: &mut Vec<String>) {
-    let m = format!("{}:{} : {}", path.display(), index, line);
+fn add_match(path: &Path, index: usize, line: &str, matches: &mut Vec<String>) {
+    let m = format!("{}:{index} : {line}", path.display(),);
     matches.push(m);
 }
 
@@ -97,7 +97,7 @@ mod tests {
         let p = Path::new(config.path.as_str());
         match_line(
             &config,
-            String::from("this line should match needle\nthis one shouldn't"),
+            "this line should match needle\nthis one shouldn't",
             p,
             1,
             &mut matches,
@@ -114,7 +114,7 @@ mod tests {
         let p = Path::new(config.path.as_str());
         match_line(
             &config,
-            String::from("this line should match needle\nthis one shouldn't"),
+            "this line should match needle\nthis one shouldn't",
             p,
             1,
             &mut matches,

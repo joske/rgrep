@@ -34,7 +34,7 @@ fn main() {
             Ok(matches) => {
                 let empty = matches.is_empty();
                 for m in matches {
-                    println!("{:?}", m);
+                    println!("{m:?}");
                 }
                 if empty {
                     exit(1);
@@ -42,7 +42,7 @@ fn main() {
                 exit(0);
             }
             Err(e) => {
-                println!("Error: {}", e);
+                println!("Error: {e}");
                 exit(-1);
             }
         }
