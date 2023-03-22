@@ -98,7 +98,7 @@ mod tests {
         match_line(
             &config,
             String::from("this line should match needle\nthis one shouldn't"),
-            &p,
+            p,
             1,
             &mut matches,
             &re,
@@ -115,7 +115,7 @@ mod tests {
         match_line(
             &config,
             String::from("this line should match needle\nthis one shouldn't"),
-            &p,
+            p,
             1,
             &mut matches,
             &re,
