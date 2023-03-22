@@ -10,7 +10,7 @@ use crate::config::Config;
 pub fn search(config: &Config) -> Result<Vec<String>, String> {
     let mut matches: Vec<String> = Vec::new();
 
-    let mut expr = String::new();
+    let mut expr = String::with_capacity(config.expression.len() + 10);
     if config.ignore_case {
         expr.push_str("(?i)");
     }
