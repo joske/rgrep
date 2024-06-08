@@ -17,16 +17,16 @@ fn main() {
         .arg(arg!([INPUT] "input file"));
     let matches = cmd.get_matches();
 
-    let input = matches.value_of("INPUT");
-    let expr = matches.value_of("EXPR");
+    let input: Option<&String> = matches.get_one("INPUT");
+    let expr: Option<&String> = matches.get_one("EXPR");
     if let (Some(pstr), Some(input)) = (expr, input) {
         let config = Config {
             expression: String::from(pstr),
             path: String::from(input),
-            recursive: matches.is_present("recursive"),
-            ignore_case: matches.is_present("ignorecase"),
-            fixed_strings: matches.is_present("fixedstrings"),
-            invert: matches.is_present("invert"),
+            recursive: matches.contains_id("recursive"),
+            ignore_case: matches.contains_id("ignorecase"),
+            fixed_strings: matches.contains_id("fixedstrings"),
+            invert: matches.contains_id("invert"),
         };
 
         let matches = search::search(&config);
