@@ -1,4 +1,5 @@
 #[allow(clippy::struct_excessive_bools)]
+#[derive(Debug)]
 pub struct Config {
     pub expression: String,
     pub path: String,

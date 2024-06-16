@@ -23,10 +23,10 @@ fn main() {
         let config = Config {
             expression: String::from(pstr),
             path: String::from(input),
-            recursive: matches.contains_id("recursive"),
-            ignore_case: matches.contains_id("ignorecase"),
-            fixed_strings: matches.contains_id("fixedstrings"),
-            invert: matches.contains_id("invert"),
+            recursive: matches.get_flag("recursive"),
+            ignore_case: matches.get_flag("ignorecase"),
+            fixed_strings: matches.get_flag("fixedstrings"),
+            invert: matches.get_flag("invert"),
         };
 
         let matches = search::search(&config);
