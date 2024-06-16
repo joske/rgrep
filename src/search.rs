@@ -68,12 +68,14 @@ fn match_line(
     matches: &mut Vec<String>,
     re: &Regex,
 ) {
-    if config.fixed_strings {
-        if config.invert ^ line.contains(config.expression.as_str()) {
-            add_match(path, index, line, matches);
-        }
-    } else if config.invert ^ re.is_match(line) {
-        add_match(path, index, line, matches);
+    let is_match = if config.fixed_strings {
+        line.contains(config.expression.as_str())
+    } else {
+        re.is_match(line)
+    };
+    match (is_match, config.invert) {
+        (true, false) | (false, true) => add_match(path, index, line, matches),
+        _ => (),
     }
 }
 
@@ -93,7 +95,63 @@ mod tests {
         let mut config = Config::new(String::from("needle"), String::from("/tmp/foo"));
         config.fixed_strings = true;
         let mut matches: Vec<String> = Vec::new();
-        let re = Regex::new("needle").unwrap();
+        let re = Regex::new(config.expression.as_str()).unwrap();
+        let p = Path::new(config.path.as_str());
+        match_line(
+            &config,
+            "this line should match needle",
+            p,
+            1,
+            &mut matches,
+            &re,
+        );
+        assert_eq!(matches.len(), 1);
+    }
+
+    #[test]
+    fn test_fixed_strings_invert() {
+        let mut config = Config::new(String::from("needle"), String::from("/tmp/foo"));
+        config.fixed_strings = true;
+        config.invert = true;
+        let mut matches: Vec<String> = Vec::new();
+        let re = Regex::new(config.expression.as_str()).unwrap();
+        let p = Path::new(config.path.as_str());
+        match_line(
+            &config,
+            "this line should match needle",
+            p,
+            1,
+            &mut matches,
+            &re,
+        );
+        assert_eq!(matches.len(), 0);
+    }
+
+    #[test]
+    fn test_fixed_strings_no_match() {
+        let mut config = Config::new(String::from("blahblah"), String::from("/tmp/foo"));
+        config.fixed_strings = true;
+        let mut matches: Vec<String> = Vec::new();
+        let re = Regex::new(config.expression.as_str()).unwrap();
+        let p = Path::new(config.path.as_str());
+        match_line(
+            &config,
+            "this line should match needle\nthis one shouldn't",
+            p,
+            1,
+            &mut matches,
+            &re,
+        );
+        assert_eq!(matches.len(), 0);
+    }
+
+    #[test]
+    fn test_fixed_strings_no_match_invert() {
+        let mut config = Config::new(String::from("blahblah"), String::from("/tmp/foo"));
+        config.fixed_strings = true;
+        config.invert = true;
+        let mut matches: Vec<String> = Vec::new();
+        let re = Regex::new(config.expression.as_str()).unwrap();
         let p = Path::new(config.path.as_str());
         match_line(
             &config,
@@ -108,9 +166,9 @@ mod tests {
 
     #[test]
     fn test_regex() {
-        let config = Config::new(String::from("needle"), String::from("/tmp/foo"));
+        let config = Config::new(String::from("n[e]*dle"), String::from("/tmp/foo"));
         let mut matches: Vec<String> = Vec::new();
-        let re = Regex::new("n[e]*dle").unwrap();
+        let re = Regex::new(config.expression.as_str()).unwrap();
         let p = Path::new(config.path.as_str());
         match_line(
             &config,
